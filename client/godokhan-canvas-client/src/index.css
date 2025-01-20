@@ -1,0 +1,80 @@
+/* 전체 화면 스타일 */
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f4f4;
+  font-family: 'Arial', sans-serif;
+}
+
+/* 컨테이너 중앙 정렬 */
+.container {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* 제목 스타일 */
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 색상 선택 UI */
+.color-picker {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* 색상 버튼 */
+.color-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.color-btn:hover {
+  transform: scale(1.1);
+}
+
+/* 색상 입력 */
+.color-input {
+  width: 50px;
+  height: 50px;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 캔버스 스타일 */
+.canvas {
+  display: grid;
+  grid-template-columns: repeat(50, 12px);
+  justify-content: center;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 개별 픽셀 */
+.pixel {
+  width: 12px;
+  height: 12px;
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  transition: background-color 0.1s ease-in-out;
+}
+
+.pixel:hover {
+  opacity: 0.8;
+}
