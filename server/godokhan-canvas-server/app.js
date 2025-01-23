@@ -1,41 +1,33 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
-var app = express();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "*" } // CORS 허용
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+let canvasData = {}; // 색칠된 픽셀 데이터 저장
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  // 새 클라이언트에게 현재 캔버스 데이터 전송
+  socket.emit("init", canvasData);
+
+  socket.on("draw", ({ x, y, color }) => {
+    canvasData[`${x}_${y}`] = color; // 색칠 정보 저장
+
+    // 모든 클라이언트에게 브로드캐스트 (본인 제외)
+    socket.broadcast.emit("draw", { x, y, color });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
 });
 
-module.exports = app;
+server.listen(5000, () => {
+  console.log("Socket.IO server running on port 5000");
+});
