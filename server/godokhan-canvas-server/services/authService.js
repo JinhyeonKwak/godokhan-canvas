@@ -56,9 +56,7 @@ const saveOrUpdateUser = async (kakaoData) => {
   const user = await User.findOneAndUpdate(
     { kakaoId: id },
     {
-      email: kakao_account.email,
-      nickname: properties.nickname,
-      profileImage: properties.profile_image,
+      nickname: properties.nickname
     },
     { new: true, upsert: true }
   );

@@ -9,7 +9,16 @@ const Canvas = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) {
+      console.error("Canvas element is not available.");
+      return;
+    }
+
     const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      console.error("Failed to get 2D context.");
+      return;
+    }
 
     socket.on("drawPixel", ({ x, y, color }) => {
       ctx.fillStyle = color;
@@ -21,7 +30,14 @@ const Canvas = () => {
     };
   }, []);
 
-  return <canvas ref={canvasRef} width={500} height={500} />;
+  return (
+    <canvas
+      ref={canvasRef}
+      width={500}
+      height={500}
+      style={{ border: "1px solid black" }} // 가시성을 위해 테두리 추가
+    />
+  );
 };
 
 export default Canvas;
