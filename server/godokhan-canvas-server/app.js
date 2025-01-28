@@ -30,7 +30,11 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    cookie: { 
+      httpOnly: true, // XSS 공격 방지
+      secure: false, // https 환경에서는 true로 설정
+      maxAge: 1000 * 60 * 60 * 24 // 1일 동안 유지
+    },
   })
 );
 

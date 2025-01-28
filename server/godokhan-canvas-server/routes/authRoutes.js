@@ -40,7 +40,6 @@ router.get("/kakao/callback", async (req, res) => {
  * [GET] 로그인 여부 확인 (세션 체크)
  */
 router.get("/me", (req, res) => {
-  console.log("test");
   if (req.session.user) {
     res.json({ user: req.session.user });
   } else {
