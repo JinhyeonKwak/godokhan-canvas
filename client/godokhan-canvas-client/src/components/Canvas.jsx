@@ -13,31 +13,34 @@ const PIXEL_SIZE = 10;
 const Canvas = () => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
-  const [color, setColor] = useColor("hex", "#000000");
-  const [canvasData, setCanvasData] = useState({});
+  const [color, setColor] = useColor("hex", "#ff0000");
   const [showPicker, setShowPicker] = useState(false);
+  const [isCanvasReady, setIsCanvasReady] = useState(false);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
-    const ctx = canvas.getContext('2d');
-    ctxRef.current = ctx;
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    socket.on("init", (pixels) => {
+      setIsCanvasReady(true); // 캔버스가 준비되었음을 표시
+      requestAnimationFrame(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        
+        canvas.width = CANVAS_WIDTH;
+        canvas.height = CANVAS_HEIGHT;
+        const ctx = canvas.getContext('2d');
+        ctxRef.current = ctx;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    drawGrid();
+        drawGrid();
 
-    socket.on("init", (data) => {
-      setCanvasData(data);
-      Object.entries(data).forEach(([key, color]) => {
-        const [x, y] = key.split('_').map(Number);
-        fillPixelAt(x, y, color);
+        pixels.forEach(pixel => {
+          fillPixelAt(pixel.x, pixel.y, pixel.color);
+        });
       });
     });
 
     socket.on("drawPixel", ({ x, y, color }) => {
-      fillPixelAt(x, y, color);
+      if (isCanvasReady) fillPixelAt(x, y, color);
     });
 
     return () => {
@@ -48,6 +51,7 @@ const Canvas = () => {
 
   const drawGrid = () => {
     const ctx = ctxRef.current;
+    if (!ctx) return;
     ctx.strokeStyle = '#ddd';
     ctx.lineWidth = 0.5;
     for (let x = 0; x < CANVAS_WIDTH; x += PIXEL_SIZE) {
@@ -66,12 +70,15 @@ const Canvas = () => {
 
   const fillPixelAt = (x, y, color) => {
     const ctx = ctxRef.current;
+    if (!ctx) return;
     ctx.fillStyle = color;
     ctx.fillRect(x, y, PIXEL_SIZE, PIXEL_SIZE);
   };
 
   const fillPixel = (e) => {
+    if (!isCanvasReady) return;
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     const x = Math.floor((e.clientX - rect.left) / PIXEL_SIZE) * PIXEL_SIZE;
     const y = Math.floor((e.clientY - rect.top) / PIXEL_SIZE) * PIXEL_SIZE;
@@ -105,11 +112,15 @@ const Canvas = () => {
           </div>
         )}
       </div>
-      <canvas
-        ref={canvasRef}
-        style={{ border: '1px solid black', cursor: 'pointer' }}
-        onClick={fillPixel}
-      />
+      {isCanvasReady ? (
+        <canvas
+          ref={canvasRef}
+          style={{ border: '1px solid black', cursor: 'pointer' }}
+          onClick={fillPixel}
+        />
+      ) : (
+        <p>캔버스를 불러오는 중...</p>
+      )}
     </div>
   );
 };

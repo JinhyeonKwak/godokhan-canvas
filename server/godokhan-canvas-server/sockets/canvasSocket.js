@@ -7,13 +7,10 @@ const canvasSocket = (io) => {
     try {
       // MongoDB에서 캔버스 데이터 불러오기
       const pixels = await Pixel.find({});
-      const canvasData = {};
-      pixels.forEach(({ x, y, color }) => {
-        canvasData[`${x}_${y}`] = color;
-      });
+      console.log(pixels);
 
       // 새 클라이언트에게 기존 캔버스 데이터 전송
-      socket.emit("init", canvasData);
+      socket.emit("init", pixels);
     } catch (error) {
       console.error("Error loading canvas data:", error);
     }
