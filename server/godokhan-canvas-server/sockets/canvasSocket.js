@@ -5,30 +5,27 @@ const canvasSocket = (io) => {
     console.log("User connected:", socket.id);
 
     try {
-      // MongoDB에서 캔버스 데이터 불러오기
+      // 사용자가 접속하면 기존 픽셀 데이터를 자동으로 전송
       const pixels = await Pixel.find({});
-      console.log(pixels);
-
-      // 새 클라이언트에게 기존 캔버스 데이터 전송
       socket.emit("init", pixels);
     } catch (error) {
       console.error("Error loading canvas data:", error);
     }
 
-    // 픽셀 색칠 이벤트
-    socket.on("drawPixel", async ({ x, y, color }) => {
+    socket.on("drawPixel", async ({ x, y, color, user }) => {
       try {
+        console.log(user);
         await Pixel.findOneAndUpdate(
           { x, y },
-          { color },
+          { color, user },
           { upsert: true, new: true }
         );
       } catch (error) {
         console.error("Error saving pixel:", error);
       }
 
-      // 모든 클라이언트에게 전송 (본인 제외)
-      socket.broadcast.emit("drawPixel", { x, y, color });
+      // 모든 클라이언트에게 브로드캐스트
+      socket.broadcast.emit("drawPixel", { x, y, color, user });
     });
 
     socket.on("disconnect", () => {

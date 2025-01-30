@@ -1,7 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { ColorPicker, useColor } from 'react-color-palette';
-import 'react-color-palette/css';
+import { useAuthContext } from "../context/AuthProvider";
 import { io } from 'socket.io-client';
+import 'react-color-palette/css';
+
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
 const socket = io(SOCKET_URL);
@@ -16,6 +18,7 @@ const Canvas = () => {
   const [color, setColor] = useColor("hex", "#ff0000");
   const [showPicker, setShowPicker] = useState(false);
   const [isCanvasReady, setIsCanvasReady] = useState(false);
+  const { user } = useAuthContext();
 
   useEffect(() => {
     socket.on("init", (pixels) => {
@@ -23,7 +26,7 @@ const Canvas = () => {
       requestAnimationFrame(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
-        
+      
         canvas.width = CANVAS_WIDTH;
         canvas.height = CANVAS_HEIGHT;
         const ctx = canvas.getContext('2d');
@@ -37,15 +40,16 @@ const Canvas = () => {
           fillPixelAt(pixel.x, pixel.y, pixel.color);
         });
       });
-    });
+    },[]);
 
     socket.on("drawPixel", ({ x, y, color }) => {
-      if (isCanvasReady) fillPixelAt(x, y, color);
+      fillPixelAt(x, y, color);
     });
 
     return () => {
       socket.off("init");
       socket.off("drawPixel");
+      socket.close();
     };
   }, []);
 
@@ -84,7 +88,7 @@ const Canvas = () => {
     const y = Math.floor((e.clientY - rect.top) / PIXEL_SIZE) * PIXEL_SIZE;
 
     fillPixelAt(x, y, color.hex);
-    socket.emit("drawPixel", { x, y, color: color.hex });
+    socket.emit("drawPixel", { x, y, color: color.hex, user: user });
   };
 
   return (

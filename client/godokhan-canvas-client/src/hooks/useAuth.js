@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
   const [error, setError] = useState(null);
 
@@ -18,6 +18,7 @@ const useAuth = () => {
 
         if (res.status === 200) {
           setIsAuthenticated(true);
+          setUser(res.user);
           console.log("Logged in");
         } else {
           setIsAuthenticated(false);
@@ -35,7 +36,7 @@ const useAuth = () => {
     checkSession();
   }, []);
 
-  return { isAuthenticated, loading, error };
+  return { isAuthenticated, user, loading, error };
 };
 
 export default useAuth;
