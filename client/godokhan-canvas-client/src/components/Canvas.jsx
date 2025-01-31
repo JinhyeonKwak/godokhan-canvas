@@ -37,6 +37,7 @@ const Canvas = () => {
         drawGrid();
 
         pixels.forEach(pixel => {
+          console.log(pixel.user);
           fillPixelAt(pixel.x, pixel.y, pixel.color);
         });
       });

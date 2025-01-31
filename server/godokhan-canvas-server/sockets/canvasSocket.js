@@ -6,7 +6,7 @@ const canvasSocket = (io) => {
 
     try {
       // 사용자가 접속하면 기존 픽셀 데이터를 자동으로 전송
-      const pixels = await Pixel.find({});
+      const pixels = await Pixel.find({}).populate("user");
       socket.emit("init", pixels);
     } catch (error) {
       console.error("Error loading canvas data:", error);
@@ -14,7 +14,6 @@ const canvasSocket = (io) => {
 
     socket.on("drawPixel", async ({ x, y, color, user }) => {
       try {
-        console.log(user);
         await Pixel.findOneAndUpdate(
           { x, y },
           { color, user },
