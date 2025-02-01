@@ -7,6 +7,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const canvasSocket = require("./sockets/canvasSocket");
 const authRoutes = require("./routes/authRoutes");
+const mongoose = require("mongoose");
 
 // MongoDB 연결
 connectDB();

@@ -6,6 +6,7 @@ const pixelSchema = new mongoose.Schema({
   y: { type: Number, required: true }, // y 좌표
   color: { type: String, required: true }, // 픽셀 색상
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // User 참조
+  createdAt: { type: Date, default: Date.now },
 });
 
 const Pixel = mongoose.model("Pixel", pixelSchema);
