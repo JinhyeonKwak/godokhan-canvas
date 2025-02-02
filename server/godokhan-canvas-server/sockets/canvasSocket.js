@@ -22,13 +22,13 @@ const canvasSocket = (io) => {
                     {color, user: findUser._id},
                     {upsert: true, new: true}
                 );
-            } catch (error) {
-                console.error("Error saving pixel:", error);
-            }
 
-            await Pixel.findOne({x, y}, (err, pixel) =>
+                const findPixel = await Pixel.findOne({x, y}).populate("user");
                 // 모든 클라이언트에게 브로드캐스트
-                socket.broadcast.emit("drawPixel", pixel))
+                socket.emit("drawPixel", findPixel);
+            } catch (error) {
+                console.error("Error finding pixel or saving pixel:", error);
+            }
         });
 
         socket.on("disconnect", () => {

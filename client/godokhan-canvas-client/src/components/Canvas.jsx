@@ -49,7 +49,10 @@ const Canvas = () => {
         }, []);
 
         socket.on("drawPixel", (pixel) => {
-            setPixelData({...pixelData, [pixel.x + "_" + pixel.y]: pixel})
+            setPixelData(prevState => ({
+                ...prevState,
+                [`${pixel.x}_${pixel.y}`]: pixel
+            }));
             fillPixelAt(pixel.x, pixel.y, pixel.color);
         });
 
@@ -99,18 +102,18 @@ const Canvas = () => {
     };
 
     const handleMouseMove = (e) => {
-      if (!isCanvasReady) return;
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const rect = canvas.getBoundingClientRect();
-      const x = Math.floor((e.clientX - rect.left) / PIXEL_SIZE) * PIXEL_SIZE;
-      const y = Math.floor((e.clientY - rect.top) / PIXEL_SIZE) * PIXEL_SIZE;
+        if (!isCanvasReady) return;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = Math.floor((e.clientX - rect.left) / PIXEL_SIZE) * PIXEL_SIZE;
+        const y = Math.floor((e.clientY - rect.top) / PIXEL_SIZE) * PIXEL_SIZE;
 
-      setHoveredPixel({ x, y });
+        setHoveredPixel({x, y});
     };
 
     const handleMouseLeave = () => {
-      setHoveredPixel(null);
+        setHoveredPixel(null);
     };
 
     return (
@@ -164,7 +167,7 @@ const Canvas = () => {
                         onMouseMove={handleMouseMove}
                         onMouseLeave={handleMouseLeave}
                     />
-                    <PixelHistory hoveredPixel={hoveredPixel} pixelData={pixelData} />
+                    <PixelHistory hoveredPixel={hoveredPixel} pixelData={pixelData}/>
                 </>
 
             ) : (
