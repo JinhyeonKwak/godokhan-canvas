@@ -1,8 +1,8 @@
 import { Navigate } from "react-router-dom";
-import { useAuthContext } from "../context/AuthProvider";
+import { useAuth } from "../context/AuthProvider";
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuthContext();
+  const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
     return <div>⏳ 인증 상태 확인 중...</div>;

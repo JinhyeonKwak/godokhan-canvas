@@ -1,9 +1,9 @@
 import { Home, LogIn, LogOut, Clock } from "lucide-react";
-import { useAuthContext } from "../context/AuthProvider.jsx";
+import { useAuth } from "../context/AuthProvider.jsx";
 import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
-  const { isAuthenticated, setIsAuthenticated, user, setUser } = useAuthContext();
+  const { isAuthenticated, setIsAuthenticated, user, setUser } = useAuth();
   const navigate = useNavigate();
 
   const handleAuth = () => {

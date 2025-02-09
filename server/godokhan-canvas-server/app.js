@@ -1,23 +1,30 @@
 require("dotenv").config();
 const express = require("express");
-const session = require("express-session");
 const http = require("http");
-const { Server } = require("socket.io");
 const cors = require("cors");
+const session = require("express-session");
+const { Server } = require("socket.io");
+const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
+
 const connectDB = require("./config/db");
 const canvasSocket = require("./sockets/canvasSocket");
 const authRoutes = require("./routes/authRoutes");
-const mongoose = require("mongoose");
 
 // MongoDB 연결
 connectDB();
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true, // 쿠키 전송을 위해 필수
+  }
+});
 
 app.use(cors({
-  origin: true,  // 모든 요청 출처 허용 (쿠키 포함 가능)
+  origin: "http://localhost:5173",
   credentials: true, // 쿠키 및 인증 정보 허용
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -38,6 +45,16 @@ app.use(
     },
   })
 );
+
+// 로깅 미들웨어
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} ${res.statusCode} ${duration}ms`);
+  });
+  next();
+})
 
 // OAuth 라우트 등록
 app.use("/auth", authRoutes);

@@ -11,7 +11,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // TODO: 새로고침할 때마다 요청 계속 보내는 것 수정
   useEffect(() => {
+    if (isAuthenticated) return;
     const checkSession = async () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/auth/me`, {
@@ -33,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkSession();
-  }, []);
+  }, [isAuthenticated]);
 
   return (
     <AuthContext.Provider value={{
@@ -46,6 +48,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuthContext = () => {
+export const useAuth = () => {
   return useContext(AuthContext);
 };
