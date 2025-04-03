@@ -3,7 +3,7 @@ const User = require("../models/User");
 
 // 사용자별 마지막 요청 시간을 저장할 Map
 const userLastRequestMap = new Map();
-
+// TODO: 현재 connect.sid 값만 있으면 세션 검사 통과함. 따라서 세션 저장소 분리해서 정확한 세션 검증 필요.
 const canvasSocket = (io) => {
     // 인증 미들웨어
     io.use((socket, next) => {
